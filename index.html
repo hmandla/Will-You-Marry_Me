@@ -41,9 +41,10 @@
       font-size: 18px;
       border-radius: 8px;
       cursor: pointer;
+      position: relative;
     }
     .yes { background-color: #4CAF50; color: white; }
-    .no { background-color: #f44336; color: white; }
+    .no { background-color: #f44336; color: white; position: absolute; transition: top 0.3s, left 0.3s; }
     .btn:hover { opacity: 0.8; }
     .hidden { display: none; }
     #confetti {
@@ -69,16 +70,17 @@
   <div class="container" id="mainContent">
     <h1>Anu papa, will you marry me? 💖</h1>
     <button class="btn yes" onclick="handleYes()">💍 Yes</button>
-    <button class="btn no" onclick="handleNo()">💔 No</button>
+    <button class="btn no" id="noButton" onmouseover="moveNo()">💔 No</button>
   </div>
 
-  <!-- Confetti canvas -->
+  <!-- Confetti -->
   <canvas id="confetti"></canvas>
 
-  <!-- JS -->
+  <!-- Confetti + No Button Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
     let noClicks = 0;
+    const noBtn = document.getElementById("noButton");
 
     function handleYes() {
       document.getElementById('mainContent').innerHTML = "<h1>Yay! 💍❤️ Let's celebrate! 🎉</h1>";
@@ -100,6 +102,19 @@
           <button class="btn yes" onclick="handleYes()">💍 Yes</button>
         `;
       }
+    }
+
+    function moveNo() {
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      const newX = Math.random() * (windowWidth - btnWidth);
+      const newY = Math.random() * (windowHeight - btnHeight);
+
+      noBtn.style.left = `${newX}px`;
+      noBtn.style.top = `${newY}px`;
     }
 
     function launchConfetti() {
@@ -126,13 +141,13 @@
       })();
     }
 
-    // Music autoplay on iOS/Chrome needs user interaction
+    // Play music on click (for autoplay restrictions)
     document.addEventListener('click', function () {
       const music = document.getElementById("bgMusic");
       if (music.paused) {
         music.play().catch(() => {});
       }
-    });
+    }, { once: true });
   </script>
 </body>
 </html>

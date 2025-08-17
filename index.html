@@ -6,56 +6,46 @@
   <title>Will You Marry Me?</title>
   <style>
     body {
-      background-image: url('image.jpeg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      background-attachment: fixed;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', sans-serif;
+      background: url('image.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
       color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
       text-align: center;
-      overflow: hidden;
+      height: 100vh;
     }
-
+    #overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1;
+    }
+    .container {
+      position: relative;
+      z-index: 2;
+      top: 40%;
+      transform: translateY(-50%);
+    }
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 40px;
-      text-shadow: 2px 2px 8px #000;
-      min-height: 60px;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px black;
     }
-
     .btn {
-      padding: 12px 28px;
+      padding: 12px 24px;
       margin: 10px;
       border: none;
-      border-radius: 8px;
       font-size: 18px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
     }
-
-    .yes {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .no {
-      background-color: #f44336;
-      color: white;
-    }
-
-    .btn:hover {
-      opacity: 0.85;
-    }
-
+    .yes { background-color: #4CAF50; color: white; }
+    .no { background-color: #f44336; color: white; }
+    .btn:hover { opacity: 0.8; }
+    .hidden { display: none; }
     #confetti {
       position: fixed;
       width: 100vw;
@@ -65,127 +55,84 @@
       z-index: 9999;
       pointer-events: none;
     }
-
-    #buttonContainer {
-      position: relative;
-      width: 300px;
-      height: 100px;
-    }
-
-    #question {
-      animation: fadeIn 1s ease;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
   </style>
 </head>
 <body>
- <audio id="bg-music" autoplay loop>
-  <source src="music.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
 
-<script>
-  window.addEventListener("load", function () {
-    const audio = document.getElementById("bg-music");
-    audio.volume = 0.4; // Optional: set volume
-    audio.play().catch(function (err) {
-      console.log("Autoplay blocked. Waiting for user interaction...");
-    });
-  });
+  <!-- Overlay -->
+  <div id="overlay"></div>
 
-  // Optional: Resume music after first user click (for autoplay policies)
-  document.addEventListener("click", function () {
-    const audio = document.getElementById("bg-music");
-    if (audio.paused) {
-      audio.play().catch(() => {});
-    }
-  });
-</script>
-  <h1 id="question"><span id="typing"></span></h1>
+  <!-- Background Music -->
+  <audio id="bgMusic" src="music.mp3" autoplay loop></audio>
 
-  <div id="buttonContainer">
-    <button class="btn yes" onclick="yesClicked()">💍 Yes</button>
-    <button class="btn no" id="noBtn" onclick="noClicked()">💔 No</button>
+  <!-- Main Content -->
+  <div class="container" id="mainContent">
+    <h1>Anu papa, will you marry me? 💖</h1>
+    <button class="btn yes" onclick="handleYes()">💍 Yes</button>
+    <button class="btn no" onclick="handleNo()">💔 No</button>
   </div>
 
-  <!-- 💌 Popup Box -->
-  <div id="popup" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background-color: rgba(0,0,0,0.8); z-index:10000; display:flex; align-items:center; justify-content:center;">
-    <div style="background:white; color:black; padding:30px; border-radius:20px; max-width:80%; text-align:center; font-size:1.2rem;">
-      <h2>💍 You said YES! 💖</h2>
-      <p>I'm the luckiest person alive. Can't wait to spend forever with you, Anu papa. 💑</p>
-      <button onclick="closePopup()" style="margin-top:20px; padding:10px 20px; font-size:1rem; border:none; border-radius:10px; background:#4CAF50; color:white;">Close</button>
-    </div>
-  </div>
+  <!-- Confetti canvas -->
+  <canvas id="confetti"></canvas>
 
-  <canvas id="confetti" class="hidden"></canvas>
-
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-
+  <!-- JS -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
-    let noClickCount = 0;
-    const noBtn = document.getElementById('noBtn');
-    const question = document.getElementById('question');
-    const typingSpan = document.getElementById('typing');
+    let noClicks = 0;
 
-    const initialText = "Anu papa, will you marry me? 💖";
-    let index = 0;
-
-    function typeText() {
-      if (index < initialText.length) {
-        typingSpan.innerHTML += initialText.charAt(index);
-        index++;
-        setTimeout(typeText, 80);
-      }
+    function handleYes() {
+      document.getElementById('mainContent').innerHTML = "<h1>Yay! 💍❤️ Let's celebrate! 🎉</h1>";
+      launchConfetti();
     }
 
-    typeText(); // start typing on load
-
-    function yesClicked() {
-      question.innerHTML = "Yayyy! 💕 You made me the happiest person alive!";
-      document.getElementById('confetti').classList.remove('hidden');
-      confetti({
-        particleCount: 200,
-        spread: 160,
-        origin: { y: 0.6 }
-      });
-      document.getElementById('popup').style.display = 'flex';
-    }
-
-    function closePopup() {
-      document.getElementById('popup').style.display = 'none';
-    }
-
-    function noClicked() {
-      noClickCount++;
-      if (noClickCount === 1) {
-        question.innerHTML = "🥺 Please don’t do this...";
-        enableDodge();
-      } else if (noClickCount === 2) {
-        question.innerHTML = "😭 I'm about to cry...";
-      } else if (noClickCount === 3) {
-        question.innerHTML = "💔 Are you serious right now?";
+    function handleNo() {
+      const main = document.getElementById('mainContent');
+      noClicks++;
+      if (noClicks === 1) {
+        main.querySelector('h1').textContent = "Please don't do this 😢";
+      } else if (noClicks === 2) {
+        main.querySelector('h1').textContent = "I'm about to cry 😭";
+      } else if (noClicks === 3) {
+        main.querySelector('h1').textContent = "Are you serious? 💔";
       } else {
-        noBtn.remove();
-        question.innerHTML = "❤️ There's only one answer... Thank you!";
+        main.innerHTML = `
+          <h1>There's only one right answer 🥹</h1>
+          <button class="btn yes" onclick="handleYes()">💍 Yes</button>
+        `;
       }
     }
 
-    function enableDodge() {
-      noBtn.addEventListener('mouseover', () => {
-        const container = document.getElementById('buttonContainer');
-        const maxX = container.offsetWidth - noBtn.offsetWidth;
-        const maxY = container.offsetHeight - noBtn.offsetHeight;
-        const newX = Math.floor(Math.random() * maxX);
-        const newY = Math.floor(Math.random() * maxY);
-        noBtn.style.position = 'absolute';
-        noBtn.style.left = newX + 'px';
-        noBtn.style.top = newY + 'px';
-      });
+    function launchConfetti() {
+      const duration = 10 * 1000;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 4,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 4,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      })();
     }
+
+    // Music autoplay on iOS/Chrome needs user interaction
+    document.addEventListener('click', function () {
+      const music = document.getElementById("bgMusic");
+      if (music.paused) {
+        music.play().catch(() => {});
+      }
+    });
   </script>
 </body>
 </html>

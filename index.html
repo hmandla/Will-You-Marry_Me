@@ -1,153 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Will You Marry Me?</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: url('image.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      font-family: Arial, sans-serif;
-      color: white;
-      text-align: center;
-      height: 100vh;
-    }
-    #overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1;
-    }
-    .container {
-      position: relative;
-      z-index: 2;
-      top: 40%;
-      transform: translateY(-50%);
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 4px black;
-    }
-    .btn {
-      padding: 12px 24px;
-      margin: 10px;
-      border: none;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      position: relative;
-    }
-    .yes { background-color: #4CAF50; color: white; }
-    .no { background-color: #f44336; color: white; position: absolute; transition: top 0.3s, left 0.3s; }
-    .btn:hover { opacity: 0.8; }
-    .hidden { display: none; }
-    #confetti {
-      position: fixed;
-      width: 100vw;
-      height: 100vh;
-      top: 0;
-      left: 0;
-      z-index: 9999;
-      pointer-events: none;
-    }
-  </style>
-</head>
-<body>
+<script>
+  let noClicks = 0;
+  const noBtn = document.getElementById("noButton");
 
-  <!-- Overlay -->
-  <div id="overlay"></div>
+  function handleYes() {
+    document.getElementById('mainContent').innerHTML = "<h1>Yay! 💍❤️ Let's celebrate! 🎉</h1>";
+    launchConfetti();
+  }
 
-  <!-- Background Music -->
-  <audio id="bgMusic" src="music.mp3" autoplay loop></audio>
+  function handleNo() {
+    noClicks++;
+    const h1 = document.querySelector('h1');
 
-  <!-- Main Content -->
-  <div class="container" id="mainContent">
-    <h1>Anu papa, will you marry me? 💖</h1>
-    <button class="btn yes" onclick="handleYes()">💍 Yes</button>
-    <button class="btn no" id="noButton" onmouseover="moveNo()">💔 No</button>
-  </div>
-
-  <!-- Confetti -->
-  <canvas id="confetti"></canvas>
-
-  <!-- Confetti + No Button Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <script>
-    let noClicks = 0;
-    const noBtn = document.getElementById("noButton");
-
-    function handleYes() {
-      document.getElementById('mainContent').innerHTML = "<h1>Yay! 💍❤️ Let's celebrate! 🎉</h1>";
-      launchConfetti();
+    if (noClicks === 1) {
+      h1.textContent = "Please don't do this 😢";
+    } else if (noClicks === 2) {
+      h1.textContent = "I'm about to cry 😭";
+    } else if (noClicks === 3) {
+      h1.textContent = "Are you serious? 💔";
+    } else {
+      document.getElementById('mainContent').innerHTML = `
+        <h1>There's only one right answer 🥹</h1>
+        <button class="btn yes" onclick="handleYes()">💍 Yes</button>
+      `;
     }
+  }
 
-    function handleNo() {
-      const main = document.getElementById('mainContent');
-      noClicks++;
-      if (noClicks === 1) {
-        main.querySelector('h1').textContent = "Please don't do this 😢";
-      } else if (noClicks === 2) {
-        main.querySelector('h1').textContent = "I'm about to cry 😭";
-      } else if (noClicks === 3) {
-        main.querySelector('h1').textContent = "Are you serious? 💔";
-      } else {
-        main.innerHTML = `
-          <h1>There's only one right answer 🥹</h1>
-          <button class="btn yes" onclick="handleYes()">💍 Yes</button>
-        `;
+  let allowMove = true;
+
+  function moveNo() {
+    if (!allowMove) return;
+
+    const btnWidth = noBtn.offsetWidth;
+    const btnHeight = noBtn.offsetHeight;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    const newX = Math.random() * (windowWidth - btnWidth);
+    const newY = Math.random() * (windowHeight - btnHeight);
+
+    noBtn.style.left = `${newX}px`;
+    noBtn.style.top = `${newY}px`;
+  }
+
+  // Enable click after hover movement
+  noBtn.addEventListener("click", () => {
+    allowMove = false; // stop moving after click
+    handleNo();
+    setTimeout(() => {
+      allowMove = true; // re-enable float after a second
+    }, 1500);
+  });
+
+  // Confetti function
+  function launchConfetti() {
+    const duration = 10 * 1000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      confetti({
+        particleCount: 4,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 }
+      });
+      confetti({
+        particleCount: 4,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 }
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
       }
+    })();
+  }
+
+  // Trigger music playback on user interaction
+  document.addEventListener('click', function () {
+    const music = document.getElementById("bgMusic");
+    if (music.paused) {
+      music.play().catch(() => {});
     }
-
-    function moveNo() {
-      const btnWidth = noBtn.offsetWidth;
-      const btnHeight = noBtn.offsetHeight;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-
-      const newX = Math.random() * (windowWidth - btnWidth);
-      const newY = Math.random() * (windowHeight - btnHeight);
-
-      noBtn.style.left = `${newX}px`;
-      noBtn.style.top = `${newY}px`;
-    }
-
-    function launchConfetti() {
-      const duration = 10 * 1000;
-      const end = Date.now() + duration;
-
-      (function frame() {
-        confetti({
-          particleCount: 4,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 }
-        });
-        confetti({
-          particleCount: 4,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 }
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    }
-
-    // Play music on click (for autoplay restrictions)
-    document.addEventListener('click', function () {
-      const music = document.getElementById("bgMusic");
-      if (music.paused) {
-        music.play().catch(() => {});
-      }
-    }, { once: true });
-  </script>
-</body>
-</html>
+  }, { once: true });
+</script>

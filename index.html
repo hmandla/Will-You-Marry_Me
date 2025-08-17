@@ -95,6 +95,15 @@
     <button class="btn no" id="noBtn" onclick="noClicked()">💔 No</button>
   </div>
 
+  <!-- 💌 Popup Box -->
+  <div id="popup" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background-color: rgba(0,0,0,0.8); z-index:10000; display:flex; align-items:center; justify-content:center;">
+    <div style="background:white; color:black; padding:30px; border-radius:20px; max-width:80%; text-align:center; font-size:1.2rem;">
+      <h2>💍 You said YES! 💖</h2>
+      <p>I'm the luckiest person alive. Can't wait to spend forever with you, Anu papa. 💑</p>
+      <button onclick="closePopup()" style="margin-top:20px; padding:10px 20px; font-size:1rem; border:none; border-radius:10px; background:#4CAF50; color:white;">Close</button>
+    </div>
+  </div>
+
   <canvas id="confetti" class="hidden"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
@@ -126,6 +135,11 @@
         spread: 160,
         origin: { y: 0.6 }
       });
+      document.getElementById('popup').style.display = 'flex';
+    }
+
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
     }
 
     function noClicked() {
@@ -138,7 +152,7 @@
       } else if (noClickCount === 3) {
         question.innerHTML = "💔 Are you serious right now?";
       } else {
-        noBtn.remove(); // remove No button
+        noBtn.remove();
         question.innerHTML = "❤️ There's only one answer... Thank you!";
       }
     }

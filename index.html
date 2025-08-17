@@ -1,128 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Will You Marry Me, Anu papa? 💍</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Will You Marry Me?</title>
   <style>
     body {
+      background-image: url('image.jpeg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
       margin: 0;
       padding: 0;
-      text-align: center;
-      font-family: 'Segoe UI', sans-serif;
-      background-image: url('https://i.imgur.com/YuG9Ixp.jpg');
-      background-size: cover;
-      background-position: center;
+      font-family: Arial, sans-serif;
       color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
     }
-    .container {
-      margin-top: 15vh;
-      background: rgba(0, 0, 0, 0.6);
-      display: inline-block;
-      padding: 30px 50px;
-      border-radius: 20px;
-    }
+
     h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
+      font-size: 3rem;
+      margin-bottom: 40px;
+      text-shadow: 2px 2px 5px #000;
     }
+
     .btn {
-      font-size: 1.5em;
-      padding: 10px 30px;
+      padding: 12px 28px;
       margin: 10px;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
+      font-size: 18px;
       cursor: pointer;
-      transition: 0.3s;
-<style>
-  body {
-    background-image: url('image.jpeg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-attachment: fixed;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    color: white;
-  }
+    }
 
-  .btn {
-    padding: 12px 28px;
-    margin: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 18px;
-    cursor: pointer;
-  }
+    .yes {
+      background-color: #4CAF50;
+      color: white;
+    }
 
-  .yes {
-    background-color: #4CAF50;
-    color: white;
-  }
+    .no {
+      background-color: #f44336;
+      color: white;
+    }
 
-  .no {
-    background-color: #f44336;
-    color: white;
-  }
+    .btn:hover {
+      opacity: 0.8;
+    }
 
-  .btn:hover {
-    opacity: 0.8;
-  }
+    .hidden {
+      display: none;
+    }
 
-  .hidden {
-    display: none;
-  }
-
-  #confetti {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    pointer-events: none;
-  }
+    #confetti {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
-  <audio id="bgMusic" autoplay loop>
+  <audio autoplay loop>
     <source src="music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
   </audio>
-  <div class="container">
-    <h1 id="proposal">Anu papa, will you marry me? 💖</h1>
-    <button class="btn yes" onclick="sayYes()">Yes</button>
-    <button class="btn no" onclick="sayNo()">No</button>
+
+  <h1 id="question">Anu papa, will you marry me? 💖</h1>
+
+  <div id="buttonContainer">
+    <button class="btn yes" onclick="yesClicked()">Yes</button>
+    <button class="btn no" onclick="noClicked()">No</button>
   </div>
 
   <canvas id="confetti" class="hidden"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
   <script>
-    let noClicks = 0;
+    let noClickCount = 0;
 
-    function sayNo() {
-      const proposal = document.getElementById('proposal');
-      noClicks++;
-      if (noClicks === 1) {
-        proposal.innerText = "Please don't say no in the first attempt 🥺";
-      } else if (noClicks === 2) {
-        proposal.innerText = "I'm about to cry, Anu Bangaram 😢";
-      } else if (noClicks === 3) {
-        proposal.innerText = "Are you really serious...? 😭";
-      } else {
-        document.querySelector('.no').style.display = 'none';
-      }
+    function yesClicked() {
+      document.getElementById('question').innerText = "Yay! 💍💖";
+      document.getElementById('confetti').classList.remove('hidden');
+      confetti({
+        particleCount: 150,
+        spread: 120,
+        origin: { y: 0.6 }
+      });
     }
 
-    function sayYes() {
-      document.querySelector('h1').innerText = "Yay!! You said Yes! 💍❤️";
-      const confetti = document.getElementById('confetti');
-      confetti.classList.remove('hidden');
+    function noClicked() {
+      noClickCount++;
+      const question = document.getElementById('question');
+      const noBtn = document.querySelector('.no');
+      const yesBtn = document.querySelector('.yes');
 
-      const confettiSettings = { target: 'confetti' };
-      const confettiInstance = new ConfettiGenerator(confettiSettings);
-      confettiInstance.render();
+      if (noClickCount === 1) {
+        question.innerText = "Please don’t do this 😢";
+      } else if (noClickCount === 2) {
+        question.innerText = "I’m about to cry 😭";
+      } else if (noClickCount === 3) {
+        question.innerText = "Are you serious? 💔";
+      } else {
+        noBtn.remove(); // remove No button
+        question.innerText = "There's only one answer 💞";
+      }
     }
   </script>
 </body>
